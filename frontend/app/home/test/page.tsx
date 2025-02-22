@@ -1,17 +1,27 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { ThumbsUp, ThumbsDown, Loader2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { HeroParticle } from "@/components/hero/HeroParticle";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import { createClient } from "@/utils/supabase/client";
+import { Badge } from "@/components/ui/badge";
 
 type PolicySet = {
   [key: string]: string;
-}
+};
 
 type RawData = {
   [key: string]: PolicySet[];
-}
+};
 
 type PolicyTuple = [string, string];
 
@@ -19,7 +29,7 @@ type Preference = {
   policy: string;
   person: string;
   liked: boolean;
-}
+};
 
 export default function PolicySwiper() {
   const [rawData, setRawData] = useState<RawData>({});
@@ -27,15 +37,34 @@ export default function PolicySwiper() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+  const [direction, setDirection] = useState<number>(0);
+  const [user, setUser] = useState<any>(null); // State to store user data
 
   useEffect(() => {
-    fetch("http://localhost:8000/swipe")
-      .then((res) => res.json())
-      .then((data: RawData) => {
-        setRawData(data);
-        setPolicies(getAllPolicies(data));
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    const client = createClient();
+
+    // Fetch user data first
+    const fetchUser = async () => {
+      const { data, error } = await client.auth.getUser();
+      if (error) {
+        console.error("Error fetching user:", error);
+        return;
+      }
+      if (data?.user) {
+        setUser(data.user); // Save the user data to state
+      }
+    };
+
+    // Fetch policies only after getting user info
+    const fetchPolicies = async () => {
+      const res = await fetch("http://localhost:8000/swipe");
+      const data: RawData = await res.json();
+      setRawData(data);
+      setPolicies(getAllPolicies(data));
+    };
+
+    fetchUser();
+    fetchPolicies();
   }, []);
 
   const getAllPolicies = (data: RawData): PolicyTuple[] => {
@@ -59,64 +88,184 @@ export default function PolicySwiper() {
 
   const handleVote = (liked: boolean): void => {
     const [policy, person] = policies[currentIndex];
-    setPreferences(prev => [...prev, { policy, person, liked }]);
+    setDirection(liked ? 1 : -1);
 
-    if (currentIndex < policies.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      setIsComplete(true);
-    }
+    setTimeout(() => {
+      setPreferences((prev) => [...prev, { policy, person, liked }]);
+      if (currentIndex < policies.length - 1) {
+        setCurrentIndex((prev) => prev + 1);
+      } else {
+        setIsComplete(true);
+      }
+      setDirection(0);
+    }, 200);
   };
 
   if (isComplete) {
     return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-xl font-bold">Your Policy Preferences</CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {preferences.map((pref, index) => (
-              <div key={index} className="flex flex-col gap-2 p-4 border rounded">
-                <div className="flex items-center gap-2">
-                  <span>{pref.liked ? '👍' : '👎'}</span>
-                  <span className="font-medium text-blue-600">{pref.person}</span>
+      <div className="relative h-screen">
+        <div className="absolute top-0 w-full h-screen z-10 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <Card className="w-full max-w-2xl h-[700px] mx-auto relative">
+              <BorderBeam duration={8} size={100} />
+              <CardHeader className="text-xl font-bold">
+                Your Policy Preferences
+              </CardHeader>
+              <CardContent className="overflow-y-auto h-[550px]">
+                <div className="space-y-4">
+                  {preferences.map((pref, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 p-4 border rounded transition-colors duration-200 hover:bg-red-50"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-blue-600">
+                          {pref.person}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`${
+                            pref.liked
+                              ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
+                              : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
+                          }`}
+                        >
+                          {pref.liked ? "👍 Agree" : "👎 Disagree"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm mt-1">{pref.policy}</p>
+                    </div>
+                  ))}
                 </div>
-                <p className="text-sm mt-1">{pref.policy}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              </CardContent>
+              <CardFooter className="flex justify-center gap-4 mt-4 pb-6">
+                <Button
+                  variant="outline"
+                  className="hover:bg-gray-100"
+                  onClick={() => {
+                    setCurrentIndex(0);
+                    setPreferences([]);
+                    setIsComplete(false);
+                  }}
+                >
+                  Try Again
+                </Button>
+
+                <Button
+                  variant="default"
+                  onClick={async () => {
+                    if (!user) {
+                      console.error("No user is authenticated.");
+                      return;
+                    }
+
+                    try {
+                      const preferencesWithUserInfo = preferences.map(
+                        (pref) => ({
+                          ...pref,
+                          email: user.email,
+                        })
+                      );
+                      console.log(preferencesWithUserInfo);
+
+                      const response = await fetch(
+                        "http://localhost:8000/submit",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify(preferencesWithUserInfo),
+                        }
+                      );
+
+                      if (response.ok) {
+                        console.log("Preferences submitted successfully!");
+                      } else {
+                        console.error("Failed to submit preferences");
+                      }
+                    } catch (error) {
+                      console.error("Error submitting preferences:", error);
+                    }
+                  }}
+                >
+                  Submit Preferences
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        </div>
+        <HeroParticle />
+      </div>
     );
   }
 
   if (policies.length === 0) {
-    return <p className="text-center text-lg">Loading policies...</p>;
+    return (
+      <div className="relative h-screen">
+        <div className="absolute top-0 w-full h-screen z-10 flex flex-col items-center justify-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <p className="text-center text-lg">Loading policies...</p>
+        </div>
+        <HeroParticle />
+      </div>
+    );
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-xl font-bold text-center">
-        Policy {currentIndex + 1} of {policies.length}
-      </CardHeader>
-      <CardContent>
-        <p className="text-lg p-4">{policies[currentIndex][0]}</p>
-      </CardContent>
-      <CardFooter className="flex justify-center gap-4">
-        <Button
-          variant="outline"
-          className="bg-red-100 hover:bg-red-200"
-          onClick={() => handleVote(false)}
-        >
-          <ThumbsDown className="w-6 h-6" />
-        </Button>
-        <Button
-          variant="outline"
-          className="bg-green-100 hover:bg-green-200"
-          onClick={() => handleVote(true)}
-        >
-          <ThumbsUp className="w-6 h-6" />
-        </Button>
-      </CardFooter>
-    </Card>
+    <div className="relative h-screen">
+      <div className="absolute top-0 w-full h-screen z-10 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{
+              opacity: 0,
+              y: 20,
+              rotateZ: 0,
+              x: 0,
+            }}
+            animate={{
+              opacity: direction === 0 ? 1 : 0,
+              y: direction === 0 ? 0 : 20,
+              rotateZ: direction * 20,
+              x: direction * 200,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="w-full max-w-2xl h-[400px] mx-auto py-4 flex flex-col relative">
+              <BorderBeam duration={8} size={100} />
+              <CardHeader className="text-xl font-bold text-center">
+                Policy {currentIndex + 1} of {policies.length}
+              </CardHeader>
+              <CardContent className="flex-1 flex items-center justify-center px-8">
+                <p className="text-xl">{policies[currentIndex][0]}</p>
+              </CardContent>
+              <CardFooter className="flex justify-center gap-8 mt-auto">
+                <Button
+                  variant="outline"
+                  className="bg-red-100 hover:bg-red-200"
+                  onClick={() => handleVote(false)}
+                >
+                  <ThumbsDown className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="bg-green-100 hover:bg-green-200"
+                  onClick={() => handleVote(true)}
+                >
+                  <ThumbsUp className="w-6 h-6" />
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <HeroParticle />
+    </div>
   );
 }

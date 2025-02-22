@@ -232,21 +232,60 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
             </motion.div>
           )}
         </AnimatePresence>
-        <motion.div layout className="space-y-4">
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading
-              ? "Loading..."
-              : formType === "login"
-              ? "Sign in"
-              : "Create account"}
-          </Button>
-          <Link
-            href="/"
-            className="flex items-center justify-center text-sm text-muted-foreground hover:text-primary transition-colors"
+        <motion.div layout className="space-y-4 pt-2">
+          <div className="flex flex-col gap-2">
+            <Button
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-200"
+              type="submit"
+              disabled={isLoading}
+              size="lg"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <span>Processing...</span>
+                </div>
+              ) : formType === "login" ? (
+                "Sign in"
+              ) : (
+                "Create account"
+              )}
+            </Button>
+
+            <div className="flex items-center justify-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-primary transition-colors gap-2"
+                asChild
+              >
+                <Link href="/">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to home
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative z-10 bg-background px-3 text-sm text-muted-foreground">
+              {formType === "login"
+                ? "New to Politicate?"
+                : "Already have an account?"}
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={toggleForm}
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Go back
-          </Link>
+            {formType === "login" ? "Create an account" : "Sign in instead"}
+          </Button>
         </motion.div>
       </motion.form>
     </motion.div>
