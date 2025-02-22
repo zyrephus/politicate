@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 from langchain.chat_models import init_chat_model
 from pse import get_political_articles
+import openai
 
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
@@ -42,7 +43,7 @@ def getPolicies():
 
         for article in articles:
             link = article["link"]
-            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it."
+            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it. Do NOT include the name of the representative or the party they represent in the statement."
 
             try:
                 response = structured_llm.invoke(prompt)
@@ -56,4 +57,42 @@ def getPolicies():
     return rtn
     
 
+'''
+context should be in this format
+conversation_history = [
+    {"role": "developer", "content": "You are a helpful AI assistant."}, 
+    {"role": "user", "content": "Explain this"},
+    {"role": "assistant", "content": "this talks abt blah blah blah"},
+
+]
+'''
+def askChat(context, user_input):
+    context.append({"role": "user", "content": user_input})
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",  # Change to gpt-3.5-turbo if needed
+        messages=context
+    )
+    #print(response.choices[0].message.content)
     
+    ai_message = response.choices[0].message.content
+    context.append({"role": "assistant", "content": ai_message})
+    return context
+    
+
+'''
+#----For testing----
+
+conversation_history = [
+    {"role": "developer", "content": "You are a helpful AI assistant."}, 
+]
+
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ["exit", "quit"]:
+        break
+    conversation_history = askChat(conversation_history, user_input)
+    print("AI:", conversation_history.choices[0].message.content)
+
+'''
+
