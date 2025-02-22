@@ -14,7 +14,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import Link from "next/link"
+import { createClient } from "@/utils/supabase/client";
 
 const data = {
   user: {
@@ -73,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         console.error("Error fetching user:", error);
         return;
       }
-      console.log(data)
+
       if (data?.user) {
         setUser({
           email: data.user.email || "",
@@ -114,27 +114,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: true,
         items: [
           {
-            title: "Genesis",
-            url: "#",
+            title: "Municipal",
+            url: "/home/municipal",
           },
           {
-            title: "Explorer",
-            url: "#",
+            title: "Provincial",
+            url: "/home/provincial",
           },
           {
-            title: "Quantum",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
-        items: [
-          {
-            title: "General",
-            url: "#",
+            title: "Federal",
+            url: "/home/federal",
           },
         ],
       },
