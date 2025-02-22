@@ -40,7 +40,7 @@ export async function updateSession(request: NextRequest) {
 
     if (
         !user &&
-        !['/', '/login', '/auth', '/signup'].includes(request.nextUrl.pathname)
+        !['/', '/login', '/home', "/test", '/auth', '/signup'].includes(request.nextUrl.pathname)
     ) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
