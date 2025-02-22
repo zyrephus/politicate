@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from llm import getPolicies, askChat
+from llm import getPolicies, askChat, summarize
 from pydantic import BaseModel
 from db import SupabaseClient
 
@@ -30,6 +30,10 @@ def getResponse(request: ChatRequest):
 @app.get("/swipe")
 def getPolicy():
     return getPolicies()
+
+@app.post("/summarize")
+def getSummary(request: str):
+    return {"response": summarize(request)}
 
 @app.post("/postPolicy")
 async def postPolicy(request: Request):
