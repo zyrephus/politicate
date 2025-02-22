@@ -1,6 +1,8 @@
 import getpass
 import os
 
+from pse import get_political_articles
+
 #os.environ.get("OPENAI_API_KEY") = 
 
 if not os.environ.get("OPENAI_API_KEY"):
@@ -10,7 +12,7 @@ if not os.environ.get("OPENAI_API_KEY"):
 from langchain.chat_models import init_chat_model
 
 llm = init_chat_model("gpt-4o-mini", model_provider="openai")
-
+representative = ["Doug Ford", "Marit Stiles", "Bonnie Crombie", "Mike Schreiner"]
 
 json_schema = {
     "title": "policies",
@@ -32,7 +34,20 @@ json_schema = {
     },
     "required": ["policy1", "policy2"],
 }
+
 structured_llm = llm.with_structured_output(json_schema)
 
-print(structured_llm.invoke("Using this article: https://www.tvo.org/article/will-bonnie-crombies-new-housing-policy-light-a-fire-under-the-ford-government give me policies from Bonnie Crombie for the upcoming provincial election."))
+for rep in representative:
+    query = f"{rep} latest policies"
+    articles = get_political_articles(query)
+
+    for article in articles:
+        link = article["link"]
+        prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election."
+
+        try:
+            response = structured_llm.invoke(prompt)
+            print(f"\n **Policies for {rep} from {link}:**\n{response}\n")
+        except Exception as e:
+            print(f"Error processing {link}: {e}")
 

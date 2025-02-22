@@ -24,15 +24,16 @@ def get_political_articles(query):
     articles = []
     for item in data.get("items", []):
         articles.append({
-            "title": item.get("title"),
+            # "title": item.get("title"),
             "link": item.get("link"),
-            "snippet": item.get("snippet"),
-            "image": item.get("pagemap", {}).get("metatags", [{}])[0].get("og:image")
+            # "snippet": item.get("snippet"),
+            # "image": item.get("pagemap", {}).get("metatags", [{}])[0].get("og:image")
         })
     
     return articles
 
 if __name__ == "__main__":
     articles = get_political_articles("Bonnie Crombie latest policies site:cbc.ca")
-    for article in articles:
-        print(article["title"], "-", article["link"])
+    print(articles)
+    # for article in articles:
+    #     print(article["link"])
