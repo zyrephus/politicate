@@ -4,25 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { login, signup } from "@/app/auth/actions";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 interface AuthFormProps {
   initialFormType?: "login" | "signup";
 }
 
 export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
-  const [formType, setFormType] = useState<"login" | "signup">(initialFormType);
+  const searchParams = useSearchParams();
+  const urlType = searchParams.get("type") as "login" | "signup" | null;
+
+  const [formType, setFormType] = useState<"login" | "signup">(
+    urlType || initialFormType
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Update form type when URL changes
+  useEffect(() => {
+    if (urlType) {
+      setFormType(urlType);
+    }
+  }, [urlType]);
 
   const toggleForm = () => {
-    setFormType(formType === "login" ? "signup" : "login");
+    const newType = formType === "login" ? "signup" : "login";
+    setFormType(newType);
     setError(null);
     setMessage(null);
+    // Update URL when toggling
+    window.history.pushState({}, "", `/auth?type=${newType}`);
   };
 
   async function onSubmit(formData: FormData) {
@@ -117,32 +135,53 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
         )}
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            required
-          />
+          <Input id="email" name="email" type="email" required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            required
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
         </div>
         {formType === "signup" && (
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
 
-              required
-            />
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
         )}
         <div className="space-y-4">
