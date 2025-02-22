@@ -33,6 +33,8 @@ def getPolicies():
     }
 
     structured_llm = llm.with_structured_output(json_schema)
+
+    rtn = {}
     
     for rep in representative:
         query = f"{rep} latest policies"
@@ -44,9 +46,13 @@ def getPolicies():
 
             try:
                 response = structured_llm.invoke(prompt)
+                #check if a list exists at the key before adding repsonse to dic
+                rtn[rep] = rtn.get(rep, [])
+                rtn[rep].append(response)
                 print(f"\n **Policies for {rep} from {link}:**\n{response}\n")
             except Exception as e:
                 print(f"Error processing {link}: {e}")
 
+    return rtn
     
 
