@@ -38,7 +38,8 @@ export default function PolicySwiper() {
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const [direction, setDirection] = useState<number>(0);
-  const [user, setUser] = useState<any>(null); // State to store user data
+  const [user, setUser] = useState<any>(null);
+  const [isStarted, setIsStarted] = useState<boolean>(false);
 
   useEffect(() => {
     const client = createClient();
@@ -101,6 +102,34 @@ export default function PolicySwiper() {
     }, 200);
   };
 
+  if (!isStarted) {
+    return (
+      <div className="relative h-screen">
+        <div className="absolute top-0 w-full h-screen z-10 flex flex-col items-center justify-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <h1 className="text-4xl font-bold">Take the Test</h1>
+            <p className="text-gray-500">
+              See which politicians you most align with
+            </p>
+            <Button
+              variant="default"
+              size="lg"
+              onClick={() => setIsStarted(true)}
+            >
+              Start Test
+            </Button>
+          </motion.div>
+        </div>
+        <HeroParticle />
+      </div>
+    );
+  }
+
   if (isComplete) {
     return (
       <div className="relative h-screen">
@@ -128,10 +157,11 @@ export default function PolicySwiper() {
                         </span>
                         <Badge
                           variant="outline"
-                          className={`${pref.liked
-                            ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
-                            : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
-                            }`}
+                          className={`${
+                            pref.liked
+                              ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
+                              : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
+                          }`}
                         >
                           {pref.liked ? "👍 Agree" : "👎 Disagree"}
                         </Badge>
@@ -169,7 +199,6 @@ export default function PolicySwiper() {
                           email: user.email,
                         })
                       );
-                      console.log(preferencesWithUserInfo);
 
                       const response = await fetch(
                         "http://localhost:8000/postPolicy",
@@ -184,6 +213,7 @@ export default function PolicySwiper() {
 
                       if (response.ok) {
                         console.log("Preferences submitted successfully!");
+                        window.location.href = "/home";
                       } else {
                         console.error("Failed to submit preferences");
                       }
@@ -207,7 +237,7 @@ export default function PolicySwiper() {
     return (
       <div className="relative h-screen">
         <div className="absolute top-0 w-full h-screen z-10 flex flex-col items-center justify-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-400-500" />
           <p className="text-center text-lg">Loading policies...</p>
         </div>
         <HeroParticle />

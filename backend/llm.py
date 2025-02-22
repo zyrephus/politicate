@@ -96,3 +96,17 @@ while True:
 
 '''
 
+def summarize(link):
+    input = f'Please summarize this article for me: {link}. Please include details of policies mentioned in the article.'
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",  # Change to gpt-3.5-turbo if needed
+        messages=[
+            {"role":"developer", "content":"You are an AI assistant that helps summarize articles to help users understand the content in a quick and consice way."},
+            {"role":"user", "content":input},
+        ]
+        
+    )
+    ai_message = response.choices[0].message.content
+    return ai_message
+
+#print(summarize("https://www.tvo.org/article/will-bonnie-crombies-new-housing-policy-light-a-fire-under-the-ford-government"))
