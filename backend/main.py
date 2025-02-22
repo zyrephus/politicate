@@ -48,12 +48,13 @@ async def postPolicy(request: Request):
             rep = entry.get("person")
             policy = entry.get("policy")
             agree = entry.get("liked")
+            rating = entry.get("rating")
 
             if not email or rep is None or policy is None or agree is None:
                 return {"error": "Missing required fields in an entry", "entry": entry}
 
             formatted_policies.append(
-                {"email": email, "rep": rep, "policy": policy, "agree": agree}
+                    {"email": email, "rep": rep, "policy": policy, "agree": agree, "rating":rating}
             )
 
         if formatted_policies:
