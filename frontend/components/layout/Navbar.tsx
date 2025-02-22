@@ -22,7 +22,7 @@ export function Navbar() {
       }}
       className="fixed top-0 w-full z-20 p-5"
     >
-      <div className="relative container mx-auto my-2 flex h-16 items-center justify-between px-2">
+      <div className="relative container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center relative group z-10">
           <div className="absolute -inset-0.5 bg-red-500/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <Link href="/" className="relative">
