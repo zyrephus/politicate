@@ -1,21 +1,19 @@
 "use client"
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 type PolicySet = {
-    policy1: string;
-    policy2: string;
-    policy3: string;
+    [key: string]: string;
 }
 
 type RawData = {
     [key: string]: PolicySet[];
 }
 
-type PolicyTuple = [string, string]; // [policy, person]
+type PolicyTuple = [string, string];
 
 type Preference = {
     policy: string;
@@ -24,27 +22,26 @@ type Preference = {
 }
 
 export default function PolicySwiper() {
-    const rawData: RawData = {
-        "Marit Stiles": [
-            {
-                "policy1": "Advocating for improved accessibility in education, which aims to ensure all students, regardless of their abilities, receive the necessary support and resources to succeed. This policy can lead to a more inclusive education system, benefiting many students; however, it may require significant financial investment and adjustment from existing educational frameworks.",
-                "policy2": "Pushing for green energy initiatives to promote sustainable practices and reduce carbon emissions. This policy supports environmental conservation and can create jobs in the renewable energy sector; on the downside, it may face resistance from industries reliant on fossil fuels and could lead to increased energy costs in the short term.",
-                "policy3": "Championing affordable housing solutions to tackle the housing crisis faced by many families. This policy aims to provide access to safe and suitable living conditions, which is essential for community well-being; however, it might face challenges in implementation due to rising real estate costs and limited available land for development."
-            }
-        ],
-        "Mike Schreiner": [
-            {
-                "policy1": "Promote Green Economy: Mike Schreiber advocates for a transition towards a green economy, which aims to create jobs in sustainable sectors. While this could lead to new job opportunities and reduced environmental impact, critics argue it may require significant investment and could disrupt existing industries.",
-                "policy2": "Universal Healthcare Expansion: Schreiner supports an expansion of universal healthcare to improve access for all Ontarians. This could ensure that more citizens receive necessary medical treatments without financial burden; however, opponents may raise concerns about the potential costs and the impact on tax rates.",
-                "policy3": "Affordable Housing Initiatives: He proposes initiatives to increase the availability of affordable housing. This could provide more citizens with access to homes, potentially reducing homelessness and housing insecurity. Conversely, there may be challenges in implementation and pushback from developers regarding regulatory changes."
-            }
-        ]
-    };
+    const [rawData, setRawData] = useState<RawData>({});
+    const [policies, setPolicies] = useState<PolicyTuple[]>([]);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [preferences, setPreferences] = useState<Preference[]>([]);
+    const [isComplete, setIsComplete] = useState<boolean>(false);
 
-    const getAllPolicies = (): PolicyTuple[] => {
+    useEffect(() => {
+        fetch("http://localhost:8000/swipe")
+            .then((res) => res.json())
+            .then((data: RawData) => {
+                setRawData(data);
+                setPolicies(getAllPolicies(data));
+            })
+            .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+
+    const getAllPolicies = (data: RawData): PolicyTuple[] => {
         const policies: PolicyTuple[] = [];
 
-        Object.entries(rawData).forEach(([person, personData]) => {
+        Object.entries(data).forEach(([person, personData]) => {
             personData.forEach((policySet: PolicySet) => {
                 Object.values(policySet).forEach((policy: string) => {
                     policies.push([policy, person]);
@@ -52,7 +49,6 @@ export default function PolicySwiper() {
             });
         });
 
-        // Fisher-Yates shuffle
         for (let i = policies.length - 1; i > 0; i--) {
             const j = Math.floor(0.2 * (i + 1));
             [policies[i], policies[j]] = [policies[j], policies[i]];
@@ -61,18 +57,9 @@ export default function PolicySwiper() {
         return policies;
     };
 
-    const policies = getAllPolicies();
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
-    const [preferences, setPreferences] = useState<Preference[]>([]);
-    const [isComplete, setIsComplete] = useState<boolean>(false);
-
     const handleVote = (liked: boolean): void => {
         const [policy, person] = policies[currentIndex];
-        setPreferences(prev => [...prev, {
-            policy,
-            person,
-            liked
-        }]);
+        setPreferences(prev => [...prev, { policy, person, liked }]);
 
         if (currentIndex < policies.length - 1) {
             setCurrentIndex(prev => prev + 1);
@@ -100,6 +87,10 @@ export default function PolicySwiper() {
                 </CardContent>
             </Card>
         );
+    }
+
+    if (policies.length === 0) {
+        return <p className="text-center text-lg">Loading policies...</p>;
     }
 
     return (
