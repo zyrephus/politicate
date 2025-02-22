@@ -1,13 +1,29 @@
+"use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export function Navbar() {
   return (
-    <nav className="w-full border-b">
-      <div className="container mx-auto my-2 flex h-16 items-center justify-between px-4">
-        <div className="flex items-center relative group">
+    <motion.nav
+      initial={{
+        opacity: 0,
+        y: 5,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        delay: 0.5,
+        duration: 0.8,
+      }}
+      className="fixed top-0 w-full z-20 p-5"
+    >
+      <div className="relative container mx-auto my-2 flex h-16 items-center justify-between px-2">
+        <div className="flex items-center relative group z-10">
           <div className="absolute -inset-0.5 bg-red-500/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <Link href="/" className="relative">
             <Image
@@ -20,7 +36,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 z-20">
           <Button variant="ghost">Sign up</Button>
           <Button>
             Login
@@ -28,6 +44,6 @@ export function Navbar() {
           </Button>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
