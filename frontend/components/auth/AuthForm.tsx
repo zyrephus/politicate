@@ -9,6 +9,7 @@ import { login, signup } from "@/app/auth/actions";
 import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthFormProps {
   initialFormType?: "login" | "signup";
@@ -80,17 +81,21 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
-      <div className="mb-8 flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
+    <motion.div
+      className="w-full max-w-md rounded-lg border bg-card p-6 shadow-lg"
+      layout
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div layout className="mb-8 flex flex-col space-y-2 text-center">
+        <motion.h1 layout className="text-2xl font-semibold tracking-tight">
           {formType === "login" ? "Welcome back" : "Create an account"}
-        </h1>
-        <p className="text-sm text-muted-foreground">
+        </motion.h1>
+        <motion.p layout className="text-sm text-muted-foreground">
           {formType === "login"
             ? "Enter your credentials to access your account"
             : "Enter your details to create your account"}
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       <div className="mb-8 flex items-center justify-center">
         <button
@@ -101,7 +106,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
           <div className="relative z-10 flex">
             <span
               className={cn(
-                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium",
+                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
                 formType === "login" && "text-white"
               )}
             >
@@ -109,7 +114,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
             </span>
             <span
               className={cn(
-                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium",
+                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
                 formType === "signup" && "text-white"
               )}
             >
@@ -117,7 +122,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
             </span>
           </div>
           <div
-            className="absolute inset-0 z-0 h-full rounded-full bg-primary transition-transform duration-200"
+            className="absolute inset-0 z-0 h-full rounded-full bg-primary transition-transform duration-200 ease-in-out"
             style={{
               width: "50%",
               transform: `translateX(${formType === "login" ? "0%" : "100%"})`,
@@ -126,18 +131,35 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
         </button>
       </div>
 
-      <form action={onSubmit} className="space-y-6">
+      <motion.form layout action={onSubmit} className="space-y-6">
         {error && (
-          <div className="text-sm text-red-500 text-center">{error}</div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-sm text-red-500 text-center"
+          >
+            {error}
+          </motion.div>
         )}
         {message && (
-          <div className="text-sm text-green-500 text-center">{message}</div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-sm text-green-500 text-center"
+          >
+            {message}
+          </motion.div>
         )}
-        <div className="space-y-2">
+        <motion.div layout className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" required />
-        </div>
-        <div className="space-y-2">
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            required
+          />
+        </motion.div>
+        <motion.div layout className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
             <Input
@@ -158,33 +180,62 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
               )}
             </button>
           </div>
-        </div>
-        {formType === "signup" && (
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
+        </motion.div>
+        <AnimatePresence mode="popLayout">
+          {formType === "signup" && (
+            <motion.div
+              layout
+              className="relative"
+              animate={{ height: "auto" }}
+              initial={{ height: 0 }}
+              exit={{ height: 0 }}
+              transition={{
+                duration: 0.2,
+                delay: formType === "signup" ? 0 : 0.2,
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {formType === "signup" && (
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      duration: 0.2,
+                      delay: formType === "signup" ? 0.2 : 0,
+                    }}
+                  >
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+        
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
-              </button>
-            </div>
-          </div>
-        )}
-        <div className="space-y-4">
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.div layout className="space-y-4">
           <Button className="w-full" type="submit" disabled={isLoading}>
             {isLoading
               ? "Loading..."
@@ -199,8 +250,8 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Go back
           </Link>
-        </div>
-      </form>
-    </div>
+        </motion.div>
+      </motion.form>
+    </motion.div>
   );
 }
