@@ -35,22 +35,34 @@ def getPolicy():
 async def postPolicy(request: Request):
     supabase_client = SupabaseClient()
     try:
-        data = await request.json()  # Parse JSON request
+        data = await request.json()
 
-        # Extract values from JSON body
-        email = data.get("email")
-        rep = data.get("rep")
-        policy = data.get("policy")
-        agree = data.get("agree")
+        if not isinstance(data, list):  # Ensure it's a list
+            return {"error": "Expected a list of policy swipes"}
 
-        if not email:  # Ensure email exists (you can add more validation)
-            return {"error": "Email is required"}
+        formatted_policies = []
+        for entry in data:
+            email = entry.get("email")
+            rep = entry.get("person")
+            policy = entry.get("policy")
+            agree = entry.get("liked")
 
-        # Call the `postPolicies` function from SupabaseClient
-        response = supabase_client.postPolicies(email, rep, policy, agree)
-        
-        return {"message": "Swipe recorded", "response": response}
-    
+            if not email or rep is None or policy is None or agree is None:
+                return {"error": "Missing required fields in an entry", "entry": entry}
+
+            formatted_policies.append({
+                "email": email,
+                "rep": rep,
+                "policy": policy,
+                "agree": agree
+            })
+
+        if formatted_policies:
+            response = supabase_client.postPolicies(formatted_policies)
+            return {"message": "Policies inserted", "response": response}
+        else:
+            return {"error": "No valid policies to insert"}
+
     except Exception as e:
         return {"error": str(e)}
 

@@ -19,16 +19,16 @@ class SupabaseClient:
         self.client: Client = create_client(url, key, options=options)
 
 
-    def postPolicies(self, email, rep, policy, agree):
+    def postPolicies(self, policies):
         try:
             response = (
-                    self.client.table("policyTest")
-                    .insert({"email":email, "rep":rep, "policy":policy, "agree":agree})
-                    .execute()
-                    )
+                self.client.table("policyTest")
+                .insert(policies)
+                .execute()
+            )
             return response
         except Exception as e:
-            return e
+            return {"error": str(e)}
 
 if __name__ == "__main__":
     client = SupabaseClient()
