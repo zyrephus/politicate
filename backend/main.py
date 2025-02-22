@@ -17,6 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+supabase_client = SupabaseClient()
+
 
 class ChatRequest(BaseModel):
     context: list  # List of history messages
@@ -35,7 +37,6 @@ def getPolicy():
 
 @app.post("/postPolicy")
 async def postPolicy(request: Request):
-    supabase_client = SupabaseClient()
     try:
         data = await request.json()
 
@@ -62,6 +63,26 @@ async def postPolicy(request: Request):
             return {"message": "Policies inserted", "response": response}
         else:
             return {"error": "No valid policies to insert"}
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.post("/getScore")
+async def get_score(request: Request):
+    try:
+        data = await request.json()  # Parse JSON request
+
+        # Extract email from request body
+        email = data.get("email")
+
+        if not email:
+            return {"error": "Email is required"}
+
+        # Fetch political score from Supabase
+        response = supabase_client.getRating(email)
+
+        return response
 
     except Exception as e:
         return {"error": str(e)}
