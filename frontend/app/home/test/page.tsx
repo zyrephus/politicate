@@ -9,6 +9,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 type PolicySet = {
   [key: string]: string;
@@ -32,6 +33,7 @@ export default function PolicySwiper() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+  const [direction, setDirection] = useState<number>(0);
 
   useEffect(() => {
     fetch("http://localhost:8000/swipe")
@@ -64,18 +66,22 @@ export default function PolicySwiper() {
 
   const handleVote = (liked: boolean): void => {
     const [policy, person] = policies[currentIndex];
-    setPreferences((prev) => [...prev, { policy, person, liked }]);
+    setDirection(liked ? 1 : -1);
 
-    if (currentIndex < policies.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      setIsComplete(true);
-    }
+    setTimeout(() => {
+      setPreferences((prev) => [...prev, { policy, person, liked }]);
+      if (currentIndex < policies.length - 1) {
+        setCurrentIndex((prev) => prev + 1);
+      } else {
+        setIsComplete(true);
+      }
+      setDirection(0);
+    }, 200);
   };
 
   if (isComplete) {
     return (
-      <div className="h-[80vh] flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center">
         <Card className="w-full max-w-2xl h-[600px] mx-auto">
           <CardHeader className="text-xl font-bold">
             Your Policy Preferences
@@ -105,7 +111,7 @@ export default function PolicySwiper() {
 
   if (policies.length === 0) {
     return (
-      <div className="h-[80vh] flex flex-col items-center justify-center gap-4">
+      <div className="h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
         <p className="text-center text-lg">Loading policies...</p>
       </div>
@@ -113,33 +119,51 @@ export default function PolicySwiper() {
   }
 
   return (
-    <div className="h-[80vh] flex items-center justify-center">
-      <Card className="w-full max-w-2xl h-[400px] mx-auto py-4 flex flex-col">
-        <CardHeader className="text-xl font-bold text-center">
-          Policy {currentIndex + 1} of {policies.length}
-        </CardHeader>
-        
-        <CardContent className="flex-1 flex items-center justify-center px-8">
-          <p className="text-xl">{policies[currentIndex][0]}</p>
-        </CardContent>
-
-        <CardFooter className="flex justify-center gap-8 mt-auto">
-          <Button
-            variant="outline"
-            className="bg-red-100 hover:bg-red-200"
-            onClick={() => handleVote(false)}
-          >
-            <ThumbsDown className="w-6 h-6" />
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-green-100 hover:bg-green-200"
-            onClick={() => handleVote(true)}
-          >
-            <ThumbsUp className="w-6 h-6" />
-          </Button>
-        </CardFooter>
-      </Card>
+    <div className="h-screen flex items-center justify-center">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{
+            opacity: 0,
+            y: 20,
+            rotateZ: 0,
+            x: 0,
+          }}
+          animate={{
+            opacity: direction === 0 ? 1 : 0,
+            y: direction === 0 ? 0 : 20,
+            rotateZ: direction * 20,
+            x: direction * 200,
+          }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="w-full max-w-2xl h-[400px] mx-auto py-4 flex flex-col">
+            <CardHeader className="text-xl font-bold text-center">
+              Policy {currentIndex + 1} of {policies.length}
+            </CardHeader>
+            <CardContent className="flex-1 flex items-center justify-center px-8">
+              <p className="text-xl">{policies[currentIndex][0]}</p>
+            </CardContent>
+            <CardFooter className="flex justify-center gap-8 mt-auto">
+              <Button
+                variant="outline"
+                className="bg-red-100 hover:bg-red-200"
+                onClick={() => handleVote(false)}
+              >
+                <ThumbsDown className="w-6 h-6" />
+              </Button>
+              <Button
+                variant="outline"
+                className="bg-green-100 hover:bg-green-200"
+                onClick={() => handleVote(true)}
+              >
+                <ThumbsUp className="w-6 h-6" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
