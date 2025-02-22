@@ -43,7 +43,7 @@ def getPolicies():
 
         for article in articles:
             link = article["link"]
-            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it. Do NOT include the name of the representative in the statement."
+            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it. Do NOT include the name of the representative or the party they represent in the statement."
 
             try:
                 response = structured_llm.invoke(prompt)
@@ -56,7 +56,7 @@ def getPolicies():
 
     return rtn
     
-    
+
 '''
 context should be in this format
 conversation_history = [
@@ -80,7 +80,7 @@ def askChat(context, user_input):
     
 
 '''
-----For testing----
+#----For testing----
 
 conversation_history = [
     {"role": "developer", "content": "You are a helpful AI assistant."}, 
@@ -93,4 +93,5 @@ while True:
         break
     conversation_history = askChat(conversation_history, user_input)
     print("AI:", conversation_history.choices[0].message.content)
+
 '''
