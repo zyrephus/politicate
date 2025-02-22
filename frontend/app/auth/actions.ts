@@ -23,7 +23,7 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/')
+  redirect('/home')
 }
 
 export async function signup(formData: FormData) {
@@ -54,5 +54,5 @@ export async function signup(formData: FormData) {
 
   // Instead of returning a message, redirect immediately
   revalidatePath('/', 'layout')
-  redirect('/')
+  redirect('/home')
 }

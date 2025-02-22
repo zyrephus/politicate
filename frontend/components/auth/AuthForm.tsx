@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 interface AuthFormProps {
   initialFormType?: "login" | "signup";
@@ -82,10 +83,12 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
 
   return (
     <motion.div
-      className="w-full max-w-md rounded-lg border bg-card p-6 shadow-lg"
+      className="relative w-full max-w-md rounded-lg border bg-card p-6 shadow-lg overflow-hidden"
       layout
       transition={{ duration: 0.2 }}
     >
+      <BorderBeam duration={8} size={100} />
+
       <motion.div layout className="mb-8 flex flex-col space-y-2 text-center">
         <motion.h1 layout className="text-2xl font-semibold tracking-tight">
           {formType === "login" ? "Welcome back" : "Create an account"}
@@ -152,12 +155,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
         )}
         <motion.div layout className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            required
-          />
+          <Input id="email" name="email" type="email" required />
         </motion.div>
         <motion.div layout className="space-y-2">
           <Label htmlFor="password">Password</Label>
@@ -212,7 +210,6 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
                         id="confirmPassword"
                         name="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
-        
                         required
                       />
                       <button
