@@ -51,7 +51,7 @@ export default function HeroSection() {
             duration: 0.8,
           }}
         >
-          <ShimmerButton className="gap-2">
+          <ShimmerButton className="gap-2" shimmerColor="#F56565" shimmerSize="0.2rem">
             <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
               Get Started
             </span>
