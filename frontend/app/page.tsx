@@ -1,13 +1,12 @@
 import React from "react";
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/layout/Navbar";
+import HeroSection from "@/components/hero";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       <Navbar />
-      <main className="flex flex-col gap-8 items-center justify-center">
-        <h1>Hello World</h1>
-      </main>
+      <HeroSection />
     </div>
   );
 }
