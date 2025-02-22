@@ -14,7 +14,7 @@ def get_political_articles(query):
         "q": query,
         "key": key,
         "cx": cseID,
-        "num": 5,  # Number of results (max 10 per request)
+        "num": 1,  # Number of results (max 10 per request)
         "lr": "lang_en",  # English language results
     }
 

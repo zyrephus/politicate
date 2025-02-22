@@ -42,7 +42,7 @@ def getPolicies():
 
         for article in articles:
             link = article["link"]
-            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election."
+            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it."
 
             try:
                 response = structured_llm.invoke(prompt)
