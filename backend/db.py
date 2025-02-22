@@ -5,6 +5,7 @@ from supabase.lib.client_options import SyncClientOptions
 
 load_dotenv()
 
+
 class SupabaseClient:
     client: Client
 
@@ -13,23 +14,20 @@ class SupabaseClient:
         key = os.getenv("SUPABASE_SERVICE_KEY")
 
         if not url or not key:
-            raise ValueError("Missing required environment variables: SUPABASE_PROJECT_URL and/or SUPABASE_API_KEY")
+            raise ValueError(
+                "Missing required environment variables: SUPABASE_PROJECT_URL and/or SUPABASE_API_KEY"
+            )
 
         options = SyncClientOptions(schema="public")
         self.client: Client = create_client(url, key, options=options)
 
-
     def postPolicies(self, policies):
         try:
-            response = (
-                self.client.table("policyTest")
-                .insert(policies)
-                .execute()
-            )
+            response = self.client.table("policyTest").insert(policies).execute()
             return response
         except Exception as e:
             return {"error": str(e)}
 
+
 if __name__ == "__main__":
     client = SupabaseClient()
-
