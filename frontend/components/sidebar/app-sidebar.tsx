@@ -21,7 +21,6 @@ import Link from "next/link"
 
 const data = {
   user: {
-    name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
@@ -49,26 +48,15 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Genesis",
+          title: "Federal",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Provincial",
           url: "#",
         },
         {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
+          title: "Municipal",
           url: "#",
         },
       ],
