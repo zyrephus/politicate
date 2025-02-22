@@ -33,7 +33,7 @@ def getPolicies():
     }
 
     structured_llm = llm.with_structured_output(json_schema)
-
+    
     for rep in representative:
         query = f"{rep} latest policies"
         articles = get_political_articles(query)
@@ -47,4 +47,6 @@ def getPolicies():
                 print(f"\n **Policies for {rep} from {link}:**\n{response}\n")
             except Exception as e:
                 print(f"Error processing {link}: {e}")
+
+    
 
