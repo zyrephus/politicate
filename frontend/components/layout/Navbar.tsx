@@ -8,18 +8,9 @@ import { motion } from "framer-motion";
 export function Navbar() {
   return (
     <motion.nav
-      initial={{
-        opacity: 0,
-        y: 5,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        delay: 0.5,
-        duration: 0.8,
-      }}
+      initial={{opacity: 0, y: 5}}
+      animate={{opacity: 1, y: 0}}
+      transition={{delay: 0.5, duration: 0.8,}}
       className="fixed top-0 w-full z-20 p-5"
     >
       <div className="relative container mx-auto flex h-16 items-center justify-between">
@@ -37,11 +28,13 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center space-x-4 z-20">
+        <Link href="/signup">
           <Button variant="ghost">Sign up</Button>
-          <Button>
-            Login
-            <LogIn className="h-4 w-4" />
-          </Button>
+        </Link>
+        <Button>
+          Login
+          <LogIn className="h-4 w-4" />
+        </Button>
         </div>
       </div>
     </motion.nav>
