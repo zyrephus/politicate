@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from db import SupabaseClient
 
 
-
 load_dotenv()
 
 app = FastAPI()
@@ -18,6 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class ChatRequest(BaseModel):
     context: list  # List of history messages
     user_input: str  # New user message
@@ -26,6 +26,7 @@ class ChatRequest(BaseModel):
 @app.post("/askChat")
 def getResponse(request: ChatRequest):
     return {"response": askChat(request.context, request.user_input)}
+
 
 @app.get("/swipe")
 def getPolicy():
@@ -54,12 +55,9 @@ async def postPolicy(request: Request):
             if not email or rep is None or policy is None or agree is None:
                 return {"error": "Missing required fields in an entry", "entry": entry}
 
-            formatted_policies.append({
-                "email": email,
-                "rep": rep,
-                "policy": policy,
-                "agree": agree
-            })
+            formatted_policies.append(
+                {"email": email, "rep": rep, "policy": policy, "agree": agree}
+            )
 
         if formatted_policies:
             response = supabase_client.postPolicies(formatted_policies)
@@ -69,6 +67,7 @@ async def postPolicy(request: Request):
 
     except Exception as e:
         return {"error": str(e)}
+
 
 @app.get("/")
 async def root():

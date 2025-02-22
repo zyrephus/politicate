@@ -128,11 +128,10 @@ export default function PolicySwiper() {
                         </span>
                         <Badge
                           variant="outline"
-                          className={`${
-                            pref.liked
-                              ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
-                              : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
-                          }`}
+                          className={`${pref.liked
+                            ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
+                            : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
+                            }`}
                         >
                           {pref.liked ? "👍 Agree" : "👎 Disagree"}
                         </Badge>
@@ -173,7 +172,7 @@ export default function PolicySwiper() {
                       console.log(preferencesWithUserInfo);
 
                       const response = await fetch(
-                        "http://localhost:8000/submit",
+                        "http://localhost:8000/postPolicy",
                         {
                           method: "POST",
                           headers: {
