@@ -49,6 +49,16 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {
@@ -59,7 +69,7 @@ export default {
   		animation: {
   			'shimmer-slide': 'shimmer-slide var(--speed) ease-in-out infinite alternate',
   			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
-				slide: "slide var(--speed) ease-in-out infinite alternate"
+  			slide: 'slide var(--speed) ease-in-out infinite alternate'
   		},
   		keyframes: {
   			'shimmer-slide': {
@@ -81,12 +91,11 @@ export default {
   					transform: 'translateZ(0) rotate(360deg)'
   				}
   			},
-				slide: {
-					'0%': {
-						transform: 'translateX(0)'
-					},
-					
-				}
+  			slide: {
+  				'0%': {
+  					transform: 'translateX(0)'
+  				}
+  			}
   		}
   	}
   },
