@@ -17,6 +17,7 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 const data = {
     user: {
@@ -27,13 +28,13 @@ const data = {
     navMain: [
         {
             title: "Policy Test",
-            url: "#",
+            url: "",
             icon: BookOpenCheck,
             isActive: true,
             items: [
                 {
                     title: "Take The Test",
-                    url: "/test",
+                    url: "/home/test",
                 },
                 {
                     title: "Past Tests",
@@ -80,14 +81,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <div className="flex items-center justify-center">
-                    <Image
-                        src="/politicate.svg"
-                        alt="Politicate Logo"
-                        width={40}
-                        height={40}
-                        priority
-                    />
+                    <Link href="/home">
+                        <Image
+                            src="/politicate.svg"
+                            alt="Politicate Logo"
+                            width={40}
+                            height={40}
+                            priority
+                        />
+
+                    </Link>
                 </div>
+
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
