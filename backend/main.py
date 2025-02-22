@@ -1,6 +1,11 @@
 from fastapi import FastAPI
-
+from llm.py import getPolicies
 app = FastAPI()
+
+
+@app.get("/swipe")
+def getPolicy():
+    return getPolicies()
 
 
 @app.get("/")
