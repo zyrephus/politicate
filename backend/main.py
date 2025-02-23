@@ -32,7 +32,7 @@ class String(BaseModel):
 def getMayor(postalCode):
     result = get_postcode_data(postalCode)
     if result:
-        return {"first_name": result[0], "last_name": result[1], "photo_url": result[2]}
+        return result
     else:
         return {"error": "No mayor found for this postcode."}
     
