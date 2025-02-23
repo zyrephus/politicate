@@ -49,11 +49,8 @@ class SupabaseClient:
             # Convert to percentage
             normalized_score = (total_score / 48) * 100  # Scale between -100% and +100%
 
-            return {
-                "total_political_score": total_score,
-                "normalized_score": round(normalized_score, 2)  # Rounded for clarity
-            }
-
+            return round(normalized_score, 2)  # Rounded for clarity
+            
         except Exception as e:
             return {"error": str(e)}
 
