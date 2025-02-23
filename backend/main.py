@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from llm import getPolicies, askChat, summarize
 from pydantic import BaseModel
 from db import SupabaseClient
+from api import get_postcode_data
 
 
 load_dotenv()
@@ -24,6 +25,17 @@ class ChatRequest(BaseModel):
     context: list  # List of history messages
     user_input: str  # New user message
 
+class String(BaseModel):
+    req: str
+
+@app.get("/getMayor/{postalCode}")
+def getMayor(postalCode):
+    result = get_postcode_data(postalCode)
+    if result:
+        return {"first_name": result[0], "last_name": result[1], "photo_url": result[2]}
+    else:
+        return {"error": "No mayor found for this postcode."}
+    
 
 @app.post("/askChat")
 def getResponse(request: ChatRequest):
@@ -35,8 +47,8 @@ def getPolicy():
     return getPolicies()
 
 @app.post("/summarize")
-def getSummary(request: str):
-    return {"response": summarize(request)}
+def getSummary(request: String):
+    return {"response": summarize(request.req)}
 
 @app.post("/postPolicy")
 async def postPolicy(request: Request):
