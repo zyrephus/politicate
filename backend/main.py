@@ -83,14 +83,9 @@ async def postPolicy(request: Request):
         return {"error": str(e)}
 
 
-@app.post("/getScore")
-async def get_score(request: Request):
+@app.get("/getScore/{email}")
+async def get_score(email):
     try:
-        data = await request.json()  # Parse JSON request
-
-        # Extract email from request body
-        email = data.get("email")
-
         if not email:
             return {"error": "Email is required"}
 
@@ -102,6 +97,39 @@ async def get_score(request: Request):
     except Exception as e:
         return {"error": str(e)}
 
+@app.post("/getPostal")
+async def get_postal(request: Request):
+    """Fetches the postal code for a given email."""
+    try:
+        data = await request.json()  # Parse JSON request
+        email = data.get("email")
+
+        if not email:
+            return {"error": "Email is required"}
+
+        response = supabase_client.getPostal(email)
+        return response
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.post("/postPostal")
+async def post_postal(request: Request):
+    """Stores or updates the postal code for a user."""
+    try:
+        data = await request.json()  # Parse JSON request
+        email = data.get("email")
+        postal_code = data.get("postalCode")
+
+        if not email or not postal_code:
+            return {"error": "Both email and postal code are required"}
+
+        response = supabase_client.postPostal(email, postal_code)
+        return response
+
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/")
 async def root():
