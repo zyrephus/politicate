@@ -83,9 +83,9 @@ def askChat(context, user_input):
     context.append({"role": "user", "content": user_input})
     response = openai.chat.completions.create(
         model="gpt-4o-mini",  # Change to gpt-3.5-turbo if needed
-        messages=context
+        messages=context,
+        max_tokens=100  # This will limit response to roughly 400 characters
     )
-    #print(response.choices[0].message.content)
     
     ai_message = response.choices[0].message.content
     context.append({"role": "assistant", "content": ai_message})
@@ -110,9 +110,9 @@ while True:
 '''
 
 def summarize(link):
-    input = f'Please give me an in concise summary about this article: {link}. Please include details of policies mentioned in the article.'
+    input = f'Please give me a brief summary (max 400 characters) about this article: {link}. Please include key policies mentioned in the article.'
     context = [
-            {"role":"developer", "content":f"You are an AI assistant that helps summarize the article: {link} to help users understand the content and answer any questions the user has about the article."},
+            {"role":"developer", "content":f"You are an AI assistant that helps summarize the article: {link} in a concise way (max 400 characters) to help users understand the content and answer any questions the user has about the article."},
         ]
     messages = askChat(context, input)
     return messages
