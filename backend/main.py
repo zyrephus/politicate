@@ -68,14 +68,9 @@ async def postPolicy(request: Request):
         return {"error": str(e)}
 
 
-@app.post("/getScore")
-async def get_score(request: Request):
+@app.get("/getScore/{email}")
+async def get_score(email):
     try:
-        data = await request.json()  # Parse JSON request
-
-        # Extract email from request body
-        email = data.get("email")
-
         if not email:
             return {"error": "Email is required"}
 

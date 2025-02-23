@@ -35,7 +35,7 @@ class SupabaseClient:
                 .select("rating")  # Only select the rating column
                 .eq("email", email)  # Filter by email
                 .order("created_at", desc=True)  # Get latest entries
-                .limit(60)  # Limit to last 60 entries
+                .limit(50)  # Limit to last 50 entries
                 .execute()
             )
 
@@ -46,7 +46,7 @@ class SupabaseClient:
             # Sum all rating values
             total_score = sum(entry["rating"] for entry in records if "rating" in entry)
 
-            return {"email": email, "total_political_score": total_score}
+            return {"total_political_score": total_score}
 
         except Exception as e:
             return {"error": str(e)}
