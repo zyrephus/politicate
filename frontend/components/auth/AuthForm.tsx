@@ -266,26 +266,6 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
               </Button>
             </div>
           </div>
-
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative z-10 bg-background px-3 text-sm text-muted-foreground">
-              {formType === "login"
-                ? "New to Politicate?"
-                : "Already have an account?"}
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={toggleForm}
-          >
-            {formType === "login" ? "Create an account" : "Sign in instead"}
-          </Button>
         </motion.div>
       </motion.form>
     </motion.div>
