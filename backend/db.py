@@ -30,13 +30,12 @@ class SupabaseClient:
 
     def getRating(self, email: str):
         try:
-            # Fetch last 60 ratings for the user
             response = (
                 self.client.table("policyTest")
                 .select("rating")  # Only select the rating column
                 .eq("email", email)  # Filter by email
                 .order("created_at", desc=True)  # Get latest entries
-                .limit(60)  # Limit to last 60 entries
+                .limit(50)  # Limit to last 50 entries
                 .execute()
             )
 
@@ -47,7 +46,40 @@ class SupabaseClient:
             # Sum all rating values
             total_score = sum(entry["rating"] for entry in records if "rating" in entry)
 
-            return {"email": email, "total_political_score": total_score}
+            return {"total_political_score": total_score}
+
+        except Exception as e:
+            return {"error": str(e)}
+
+    def getPostal(self, email: str):
+        """Fetches the postal code for a given email."""
+        try:
+            response = (
+                self.client.table("userData")  
+                .select("postalCode") 
+                .eq("email", email) 
+                .single() 
+                .execute()
+            )
+
+            if response.data:
+                return {"email": email, "postalCode": response.data["postalCode"]}
+            else:
+                return {"error": "No postal code found for this email"}
+
+        except Exception as e:
+            return {"error": str(e)}
+
+
+    def postPostal(self, email: str, postalCode: str):
+        """Inserts or updates the postal code for a given email."""
+        try:
+            response = (
+                self.client.table("userData")
+                .upsert({"email": email, "postalCode": postalCode})  
+                .execute()
+            )
+            return {"message": "Postal code saved", "response": response}
 
         except Exception as e:
             return {"error": str(e)}
