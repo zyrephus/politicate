@@ -1,6 +1,19 @@
 # 🇨🇦 Politicate 🇨🇦
 ### Empowering locals with simple, accessible political literacy
 
+## 🌍 About Politicate  
+
+**Politicate** is a platform designed to make political education simple, accessible, and locally relevant. Staying informed about politics can be overwhelming, with complex policies, constant updates, and unclear information. **Politicate** breaks down these barriers by providing:  
+
+✅ **Personalized Political Insights** – Enter your postal code to find your municipal, provincial, and federal representatives.  
+✅ **Policy Alignment Quiz** – Discover where you stand politically by answering simple questions on key policies.  
+✅ **Localized Political News** – Get curated news articles and updates relevant to your region.  
+✅ **AI-Powered News Assistant** – Use an AI chatbot to summarize and ask questions about political news in a neutral, unbiased way.  
+
+Whether you're a student, a professional, or simply a concerned citizen, **Politicate** ensures that staying politically informed is easy and engaging.  
+
+---
+
 ## Pre-requisites
 Before running **Politicate**, make sure you have the following installed:
 
