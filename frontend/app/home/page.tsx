@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { PostalCodeForm } from "@/components/postal-code-form";
 
 interface Politicians {
   mayor_name: string;
@@ -31,11 +32,12 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [score, setScore] = useState<Score | null>(null);
+  const [isPostalCodeModalOpen, setIsPostalCodeModalOpen] = useState(false);
+  const [currentPostalCode, setCurrentPostalCode] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // First, get the current user
         const client = createClient();
         const {
           data: { user },
@@ -45,15 +47,22 @@ export default function HomePage() {
         if (userError) throw new Error("Failed to get user");
         if (!user?.email) throw new Error("No user email found");
 
-        // Then, get their postal code
+        // Get postal code
         const postalResponse = await fetch(
           `http://localhost:8000/getPostal/${user.email}`
         );
         const postalData = await postalResponse.json();
 
-        if (!postalData.postalCode) throw new Error("No postal code found");
+        // If no postal code, show the modal
+        if (!postalData.postalCode) {
+          setIsPostalCodeModalOpen(true);
+          setLoading(false);
+          return;
+        }
 
-        // Finally, get the politicians for that postal code
+        setCurrentPostalCode(postalData.postalCode);
+
+        // Rest of your data fetching...
         const politiciansResponse = await fetch(
           `http://localhost:8000/getPoliticians/${postalData.postalCode}`
         );
@@ -63,14 +72,10 @@ export default function HomePage() {
 
         setPoliticians(politiciansData);
 
-        // Then, get the score for the current user
         const scoreResponse = await fetch(
           `http://localhost:8000/getScore/${user.email}`
         );
         const scoreData = await scoreResponse.json();
-
-        if (scoreData.error) throw new Error(scoreData.error);
-
         setScore(scoreData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -81,6 +86,26 @@ export default function HomePage() {
 
     fetchData();
   }, []);
+
+  const handlePostalCodeUpdate = async (newCode: string) => {
+    const client = createClient();
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+
+    if (!user?.email) throw new Error("No user email found");
+
+    await fetch("http://localhost:8000/postPostal", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        postalCode: newCode,
+      }),
+    });
+  };
 
   if (loading) {
     return (
@@ -106,6 +131,13 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen">
+      <PostalCodeForm
+        isOpen={isPostalCodeModalOpen}
+        onOpenChange={setIsPostalCodeModalOpen}
+        currentPostalCode={currentPostalCode}
+        onUpdate={handlePostalCodeUpdate}
+      />
+
       <div className="absolute inset-0 w-full z-10">
         <motion.div
           initial={{ opacity: 0, y: 5 }}
