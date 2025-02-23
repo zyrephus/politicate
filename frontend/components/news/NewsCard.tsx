@@ -22,12 +22,14 @@ interface NewsCardProps {
 export function NewsCard({ news }: NewsCardProps) {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
-
-  const imageUrl = !imageError && news.image ? news.image : "/dummy-news.jpg";
+  
+  const imageUrl = news.image && !imageError 
+    ? news.image 
+    : "/dummy-news.jpg";
 
   return (
     <>
-      <Card className="overflow-hidden transition-all hover:shadow-lg h-[500px]">
+      <Card className="overflow-hidden transition-all hover:shadow-lg h-[550px] flex flex-col">
         <div className="aspect-video relative overflow-hidden">
           <Image
             src={imageUrl}
@@ -38,7 +40,7 @@ export function NewsCard({ news }: NewsCardProps) {
             onError={() => setImageError(true)}
           />
         </div>
-        <CardHeader>
+        <CardHeader className="flex-none">
           <div className="space-y-2">
             <h3 className="font-semibold leading-tight text-lg line-clamp-2">
               {news.title}
@@ -48,16 +50,16 @@ export function NewsCard({ news }: NewsCardProps) {
             </Badge>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-grow overflow-auto">
           <p className="text-muted-foreground text-sm line-clamp-3">
             {news.snippet}
           </p>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex-none flex flex-col gap-2 p-4">
           <Link href={news.link} target="_blank" className="w-full">
             <Button className="w-full" variant="outline">
               Read More
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
           </Link>
           <Button
@@ -65,7 +67,7 @@ export function NewsCard({ news }: NewsCardProps) {
             onClick={() => setIsChatOpen(true)}
           >
             Summarize with AI
-            <Sparkles className="h-4 w-4" />
+            <Sparkles className="ml-2 h-4 w-4" />
           </Button>
         </CardFooter>
       </Card>
