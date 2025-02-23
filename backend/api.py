@@ -89,7 +89,13 @@ def get_postcode_data(postcode: str) -> tuple[str, str, str, str] | None:
     premier_photo = premier["photo"]
 
     if mayor_name and premier_name:
-        return mayor_name, mayor_photo, province, premier_name, premier_photo
+        return {
+            "mayor_name": mayor_name, 
+            "mayor_photo": mayor_photo, 
+            "province": province, 
+            "premier_name": premier_name, 
+            "premier_photo": premier_photo
+        }
 
     return None
 
