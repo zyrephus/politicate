@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface PostalCodeFormProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export function PostalCodeForm({
   const [newPostalCode, setNewPostalCode] = useState(currentPostalCode);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const validatePostalCode = (code: string) => {
     const formattedCode = code.replace(/\s+/g, "").toUpperCase();
@@ -53,6 +55,10 @@ export function PostalCodeForm({
     try {
       await onUpdate(formattedCode);
       onOpenChange(false);
+      // Refresh the page
+      router.refresh();
+      // Force a hard reload to ensure fresh data
+      window.location.reload();
     } catch (error) {
       setError("Failed to update postal code. Please try again.");
     } finally {
