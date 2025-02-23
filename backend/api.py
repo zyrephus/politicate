@@ -92,9 +92,11 @@ def get_postcode_data(postcode: str) -> tuple[str, str, str, str] | None:
         return {
             "mayor_name": mayor_name, 
             "mayor_photo": mayor_photo, 
-            "province": province, 
+            "province": province,
             "premier_name": premier_name, 
-            "premier_photo": premier_photo
+            "premier_photo": premier_photo,
+            "federal": "Justin Trudeau",
+            "federal_photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Prime_Minister_Trudeau%27s_message_on_Christmas_2023_%280m29s%29_%28cropped%29.jpg/640px-Prime_Minister_Trudeau%27s_message_on_Christmas_2023_%280m29s%29_%28cropped%29.jpg",
         }
 
     return None

@@ -37,17 +37,16 @@ export function NavUser({
   useEffect(() => {
     const fetchPostalCode = async () => {
       try {
-        const response = await fetch("http://localhost:8000/getPostal", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: user.email }),
-        });
+        const response = await fetch(
+          `http://localhost:8000/getPostal/${user.email}`
+        );
 
         const data = await response.json();
-        if (data.postal_code) {
-          setPostalCode(data.postal_code);
+        console.log(data);
+        if (data.postalCode) {
+          console.log(data.postalCode);
+          console.log("postal code found");
+          setPostalCode(data.postalCode);
         }
       } catch (error) {
         console.error("Error fetching postal code:", error);
