@@ -51,7 +51,6 @@ class SupabaseClient:
 
             return round(normalized_score, 2)  # Rounded for clarity
             
-
         except Exception as e:
             return {"error": str(e)}
 
