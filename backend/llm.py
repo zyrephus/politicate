@@ -18,19 +18,31 @@ def getPolicies():
         "type": "object",
         "properties": {
             "policy1": {
-                "type": "string",
-                "description": "A policy found in the artcile",
+                "type": "object",
+                "properties": {
+                    "statement": {"type": "string", "description": "A policy found in the article"},
+                    "rating": {"type": "integer", "description": "Rating of the policy from -2 to 2"}
+                },
+                "required": ["statement", "rating"]
             },
             "policy2": {
-                "type": "string",
-                "description": "Another policy found in the artcile",
+                "type": "object",
+                "properties": {
+                    "statement": {"type": "string", "description": "Another policy found in the article"},
+                    "rating": {"type": "integer", "description": "Rating of the policy from -2 to 2"}
+                },
+                "required": ["statement", "rating"]
             },
             "policy3": {
-                "type": "string",
-                "description": "Another policy found in the artcile",
+                "type": "object",
+                "properties": {
+                    "statement": {"type": "string", "description": "Another policy found in the article"},
+                    "rating": {"type": "integer", "description": "Rating of the policy from -2 to 2"}
+                },
+                "required": ["statement", "rating"]
             },
         },
-        "required": ["policy1", "policy2"],
+        "required": ["policy1", "policy2"]
     }
 
     structured_llm = llm.with_structured_output(json_schema)
@@ -43,7 +55,8 @@ def getPolicies():
 
         for article in articles:
             link = article["link"]
-            prompt = f"Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it. Do NOT include the name of the representative or the party they represent in the statement."
+            prompt = f" 1. Using this article: {link}, extract policies from {rep} for the upcoming provincial election. Try to convert the policies into a unbias statement, including good and bad things about it. Do NOT include the name of the representative or the party they represent in the statement. 2. After creating a policy, rate it on a scale from -2 to 2, where: -2 (NDP) → Strongly left-wing, progressive, socialist policies (e.g., universal healthcare expansion, wealth redistribution, strong labor protections). -1 (Green) → Left-leaning, primarily focused on environmental sustainability and social justice (e.g., aggressive climate action, carbon taxes, renewable energy investments). 0 (Neutral) → Non-partisan or widely accepted policies (e.g., infrastructure investment, general economic stability, public safety improvements). 1 (Liberal) → Center-right, favoring regulated capitalism with some social programs (e.g., moderate tax cuts, pro-business policies, strategic public investments). 2 (Conservative) → Right-wing, emphasizing free markets, lower taxes, deregulation, and strong national security (e.g., corporate tax reductions, privatization, oil pipeline expansion)."
+
 
             try:
                 response = structured_llm.invoke(prompt)
