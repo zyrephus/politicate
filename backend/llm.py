@@ -4,6 +4,8 @@ from langchain.chat_models import init_chat_model
 from pse import get_political_articles
 import openai
 from langchain.schema import SystemMessage, HumanMessage
+import requests
+from pse import get_political_articles
 
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
@@ -51,7 +53,7 @@ def getPolicies():
     
     for rep in representative:
         query = f"{rep} latest policies"
-        articles = get_political_articles(query)
+        articles = get_political_articles(query, 1)
 
         for article in articles:
             link = article["link"]
@@ -69,6 +71,7 @@ def getPolicies():
 
     return rtn
     
+
 
 '''
 context should be in this format
@@ -118,35 +121,3 @@ def summarize(link):
     return messages
 
 #print(summarize("https://www.tvo.org/article/will-bonnie-crombies-new-housing-policy-light-a-fire-under-the-ford-government"))
-
-def scoreSummary(rating):
-    prompt = """
-    You are an AI expert in Canadian politics, trained to analyze political alignment based on a user's rating on a scale from -50 to 50.
-    The user's normalized score determines their political alignment:
-
-    ≤ 80: Strongly Left-Wing (NDP)
-    -79 to -40: Leaning Left (Green)
-    -39 to 39: Centrist
-    40 to 79: Leaning Right (Liberal)
-    ≥ 80: Strongly Right-Wing (Conservative)
-    Your task:
-
-    Provide a concise, educational, and unbiased explanation (1-2 sentences) of what their rating means.
-    Explain the general beliefs and policy positions of their alignment without assuming personal views.
-    Avoid partisan language or persuasion—keep it neutral and informative.
-
-    Example Output:
-
-    "Your score places you in the Centrist category, indicating a balance between progressive and conservative views. Centrists may support policies from both sides, such as moderate economic regulation alongside social freedoms."
-    """
-
-    messages = [
-            SystemMessage(content=prompt),
-            HumanMessage(content=rating),
-            ]
-
-    response = llm(messages)
-    return response.content
-
-if __name__ == "__main__":
-    print(scoreSummary("40"))

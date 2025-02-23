@@ -8,13 +8,13 @@ key = os.getenv("GOOGLE_CLOUD_API_KEY")
 cseID = os.getenv("PSE_API_KEY")
 
 
-def get_political_articles(query):
+def get_political_articles(query, num):
     url = f"https://www.googleapis.com/customsearch/v1"
     params = {
         "q": query,
         "key": key,
         "cx": cseID,
-        "num": 1,  # Number of results (max 10 per request)
+        "num": num,  # Number of results (max 10 per request)
         "lr": "lang_en",  # English language results
     }
 
@@ -24,10 +24,10 @@ def get_political_articles(query):
     articles = []
     for item in data.get("items", []):
         articles.append({
-            # "title": item.get("title"),
+            "title": item.get("title"),
             "link": item.get("link"),
-            # "snippet": item.get("snippet"),
-            # "image": item.get("pagemap", {}).get("metatags", [{}])[0].get("og:image")
+            "snippet": item.get("snippet"),
+            "image": item.get("pagemap", {}).get("metatags", [{}])[0].get("og:image")
         })
     
     return articles

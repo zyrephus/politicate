@@ -1,10 +1,12 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from llm import getPolicies, askChat, summarize, scoreSummary
+from llm import getPolicies, askChat, summarize, getSnippet, scoreSummary
+from pse import get_political_articles
 from pydantic import BaseModel
 from db import SupabaseClient
 from api import get_postcode_data
+import requests
 
 
 load_dotenv()
@@ -49,6 +51,11 @@ def getPolicy():
 @app.post("/summarize")
 def getSummary(request: String):
     return {"response": summarize(request.req)}
+
+# governmentBody should be one of {Municipal, Provincial, Federal}
+@app.get("/getNews/{governmentBody}/{postcode}")
+def getNews(governmentBody, postcode):
+    return getSnippet(governmentBody, postcode)
 
 @app.post("/postPolicy")
 async def postPolicy(request: Request):
