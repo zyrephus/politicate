@@ -21,12 +21,13 @@ interface NewsCardProps {
 
 export function NewsCard({ news }: NewsCardProps) {
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const imageUrl =
-    news.pagemap?.metatags?.[0]?.["og:image"] || "/dummy-news.jpg";
+  const [imageError, setImageError] = useState(false);
+
+  const imageUrl = !imageError && news.image ? news.image : "/dummy-news.jpg";
 
   return (
     <>
-      <Card className="overflow-hidden transition-all hover:shadow-lg">
+      <Card className="overflow-hidden transition-all hover:shadow-lg h-[500px]">
         <div className="aspect-video relative overflow-hidden">
           <Image
             src={imageUrl}
@@ -34,6 +35,7 @@ export function NewsCard({ news }: NewsCardProps) {
             fill
             className="object-cover transition-transform hover:scale-105"
             priority
+            onError={() => setImageError(true)}
           />
         </div>
         <CardHeader>
