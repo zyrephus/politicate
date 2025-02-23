@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface Politicians {
   mayor_name: string;
@@ -18,10 +19,18 @@ interface Politicians {
   province: string;
 }
 
+interface Score {
+  score?: {
+    error?: string;
+  };
+  summary: string;
+}
+
 export default function HomePage() {
   const [politicians, setPoliticians] = useState<Politicians | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [score, setScore] = useState<Score | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +62,16 @@ export default function HomePage() {
         if (politiciansData.error) throw new Error(politiciansData.error);
 
         setPoliticians(politiciansData);
+
+        // Then, get the score for the current user
+        const scoreResponse = await fetch(
+          `http://localhost:8000/getScore/${user.email}`
+        );
+        const scoreData = await scoreResponse.json();
+
+        if (scoreData.error) throw new Error(scoreData.error);
+
+        setScore(scoreData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -125,6 +144,60 @@ export default function HomePage() {
               image={politicians?.federal_photo || "/dummy-thumbnail.jpg"}
             />
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="bg-card rounded-lg p-6 shadow-sm"
+          >
+            <h2 className="text-2xl font-semibold mb-6">
+              Your Political Alignment
+            </h2>
+            {score?.score?.error ? (
+              <div className="flex gap-8 items-center">
+                <div className="flex-1">
+                  <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                    <span>Left (-100)</span>
+                    <span>Right (100)</span>
+                  </div>
+                  <div className="relative h-8">
+                    <Progress
+                      value={50}
+                      className="h-full rounded-full opacity-50"
+                    />
+                    <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 text-sm font-medium text-muted-foreground">
+                      No Score Yet
+                    </div>
+                  </div>
+                </div>
+                <div className="w-1/3">
+                  <p className="text-muted-foreground">{score.summary}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-8 items-center">
+                <div className="flex-1">
+                  <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                    <span>Left (-100)</span>
+                    <span>Right (100)</span>
+                  </div>
+                  <div className="relative h-8">
+                    <Progress
+                      value={((score?.score as number) + 100) / 2}
+                      className="h-full rounded-full"
+                    />
+                    <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 text-sm font-medium">
+                      {score?.score}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-1/3">
+                  <p className="text-muted-foreground">{score?.summary}</p>
+                </div>
+              </div>
+            )}
+          </motion.div>
         </motion.div>
       </div>
       <HeroParticle />

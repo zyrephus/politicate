@@ -16,7 +16,7 @@ export function PoliticianCard({ name, role, image }: PoliticianCardProps) {
             src={image}
             alt={name}
             fill
-            className="object-cover transition-transform hover:scale-105"
+            className="object-cover transition-transform hover:scale-105 rounded-lg"
             priority
           />
         </div>
