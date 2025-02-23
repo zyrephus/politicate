@@ -50,7 +50,6 @@ class SupabaseClient:
             normalized_score = (total_score / 48) * 100  # Scale between -100% and +100%
 
             return {
-                "email": email,
                 "total_political_score": total_score,
                 "normalized_score": round(normalized_score, 2)  # Rounded for clarity
             }
