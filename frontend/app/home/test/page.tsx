@@ -16,19 +16,23 @@ import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge";
 
 type PolicySet = {
-  [key: string]: string;
+  [key: string]: {
+    statement: string;
+    rating: number;
+  };
 };
 
 type RawData = {
   [key: string]: PolicySet[];
 };
 
-type PolicyTuple = [string, string];
+type PolicyTuple = [string, string, number]; // [statement, person, rating]
 
 type Preference = {
   policy: string;
   person: string;
   liked: boolean;
+  rating: number;
 };
 
 export default function PolicySwiper() {
@@ -44,7 +48,6 @@ export default function PolicySwiper() {
   useEffect(() => {
     const client = createClient();
 
-    // Fetch user data first
     const fetchUser = async () => {
       const { data, error } = await client.auth.getUser();
       if (error) {
@@ -52,14 +55,14 @@ export default function PolicySwiper() {
         return;
       }
       if (data?.user) {
-        setUser(data.user); // Save the user data to state
+        setUser(data.user);
       }
     };
 
-    // Fetch policies only after getting user info
     const fetchPolicies = async () => {
       const res = await fetch("http://localhost:8000/swipe");
       const data: RawData = await res.json();
+      console.log(data);
       setRawData(data);
       setPolicies(getAllPolicies(data));
     };
@@ -73,8 +76,12 @@ export default function PolicySwiper() {
 
     Object.entries(data).forEach(([person, personData]) => {
       personData.forEach((policySet: PolicySet) => {
-        Object.values(policySet).forEach((policy: string) => {
-          policies.push([policy, person]);
+        Object.values(policySet).forEach((policy: any) => {
+          if (typeof policy === "object" && policy.statement) {
+            policies.push([policy.statement, person, policy.rating]); // Include rating
+          } else if (typeof policy === "string") {
+            policies.push([policy, person, 0]); // Default rating if not provided
+          }
         });
       });
     });
@@ -88,11 +95,11 @@ export default function PolicySwiper() {
   };
 
   const handleVote = (liked: boolean): void => {
-    const [policy, person] = policies[currentIndex];
+    const [policy, person, rating] = policies[currentIndex];
     setDirection(liked ? 1 : -1);
 
     setTimeout(() => {
-      setPreferences((prev) => [...prev, { policy, person, liked }]);
+      setPreferences((prev) => [...prev, { policy, person, liked, rating }]);
       if (currentIndex < policies.length - 1) {
         setCurrentIndex((prev) => prev + 1);
       } else {
@@ -157,11 +164,10 @@ export default function PolicySwiper() {
                         </span>
                         <Badge
                           variant="outline"
-                          className={`${
-                            pref.liked
-                              ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
-                              : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
-                          }`}
+                          className={`${pref.liked
+                            ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100"
+                            : "bg-red-100 text-red-700 border-red-200 hover:bg-red-100"
+                            }`}
                         >
                           {pref.liked ? "👍 Agree" : "👎 Disagree"}
                         </Badge>
