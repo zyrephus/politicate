@@ -35,7 +35,7 @@ class SupabaseClient:
                 .select("rating")  # Only select the rating column
                 .eq("email", email)  # Filter by email
                 .order("created_at", desc=True)  # Get latest entries
-                .limit(50)  # Limit to last 50 entries
+                .limit(24)  # get the last 2 tests  - meaning the range of the score should be between -48 to 48
                 .execute()
             )
 
@@ -46,7 +46,13 @@ class SupabaseClient:
             # Sum all rating values
             total_score = sum(entry["rating"] for entry in records if "rating" in entry)
 
-            return {"total_political_score": total_score}
+            # Convert to percentage
+            normalized_score = (total_score / 48) * 100  # Scale between -100% and +100%
+
+            return {
+                "total_political_score": total_score,
+                "normalized_score": round(normalized_score, 2)  # Rounded for clarity
+            }
 
         except Exception as e:
             return {"error": str(e)}
