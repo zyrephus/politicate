@@ -121,3 +121,86 @@ def summarize(link):
     return messages
 
 #print(summarize("https://www.tvo.org/article/will-bonnie-crombies-new-housing-policy-light-a-fire-under-the-ford-government"))
+
+def scoreSummary(rating):
+    prompt = """
+    You are an AI expert in Canadian politics, trained to analyze political alignment based on a user's rating on a scale from -50 to 50.
+    The user's normalized score determines their political alignment:
+
+    ≤ 80: Strongly Left-Wing (NDP)
+    -79 to -40: Leaning Left (Green)
+    -39 to 39: Centrist
+    40 to 79: Leaning Right (Liberal)
+    ≥ 80: Strongly Right-Wing (Conservative)
+    Your task:
+
+    Provide a concise, educational, and unbiased explanation (1-2 sentences) of what their rating means.
+    Explain the general beliefs and policy positions of their alignment without assuming personal views.
+    Avoid partisan language or persuasion—keep it neutral and informative.
+
+    Example Output:
+
+    "Your score places you in the Centrist category, indicating a balance between progressive and conservative views. Centrists may support policies from both sides, such as moderate economic regulation alongside social freedoms."
+    """
+
+    messages = [
+            SystemMessage(content=prompt),
+            HumanMessage(content=rating),
+            ]
+
+    response = llm(messages)
+    return response.content
+
+if __name__ == "__main__":
+    print(scoreSummary("40"))
+
+def getSnippet(governmentBody, postcode):
+    url = f"http://api.geonames.org/postalCodeSearchJSON?postalcode={postcode}&country=CA&username=talz_a"
+    response = requests.get(url)
+    data = response.json().get("postalCodes", [])
+    location=""
+    if data:
+        if(governmentBody == "Provincial"):
+            location = data[0].get("adminName1", "Unknown")
+        elif(governmentBody == "Municipal"):
+            location = data[0].get("placeName", "Unknown")
+        elif(governmentBody == "Federal"):
+            location = "Canada"
+    query = f"Latest news articles in {location}'s {governmentBody} government"
+    articles =  get_political_articles(query, 3)
+
+    rtn = []
+    
+
+    for article in articles:
+            try:
+                link = article["link"]
+                prompt = f" Using this article: {link}, give me a short 1-2 sentence summary introduction about the article"
+                
+                context = [
+                    {"role":"developer", "content":f"You are an AI assistant that helps summarize articles"}
+                ]
+                context.append({"role": "user", "content": prompt})
+                response = openai.chat.completions.create(
+                    model="gpt-4o-mini",  # Change to gpt-3.5-turbo if needed
+                    messages=context
+                )
+                #print(response.choices[0].message.content)
+        
+                ai_message = response.choices[0].message.content
+                
+                result = {
+                    "title": article["title"],
+                    "link": article["link"],
+                    "response": ai_message,
+                    "image": article["image"]
+                }
+                rtn.append(result)
+                
+            except Exception as e:
+                print(f"Error processing {link}: {e}")
+                
+    return rtn
+    
+
+#print(getSnippet("Provincial", "M2J3B1"))
