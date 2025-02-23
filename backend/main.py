@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from llm import getPolicies, askChat, summarize
+from llm import getPolicies, askChat, summarize, scoreSummary
 from pydantic import BaseModel
 from db import SupabaseClient
 from api import get_postcode_data
@@ -90,9 +90,13 @@ async def get_score(email):
             return {"error": "Email is required"}
 
         # Fetch political score from Supabase
-        response = supabase_client.getRating(email)
+        score = supabase_client.getRating(email)
+        summary = scoreSummary(str(score)) 
 
-        return response
+        return {
+                "score":score,
+                "summary":summary
+            }
 
     except Exception as e:
         return {"error": str(e)}
