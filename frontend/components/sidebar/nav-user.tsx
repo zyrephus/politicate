@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronsUpDown, LogOut, MapPin } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,7 +31,57 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const [isPostalCodeOpen, setIsPostalCodeOpen] = useState(false);
-  const [postalCode, setPostalCode] = useState("M5V2T6");
+  const [postalCode, setPostalCode] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPostalCode = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/getPostal/${user.email}`
+        );
+
+        const data = await response.json();
+        console.log(data);
+        if (data.postalCode) {
+          console.log(data.postalCode);
+          console.log("postal code found");
+          setPostalCode(data.postalCode);
+        }
+      } catch (error) {
+        console.error("Error fetching postal code:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user.email) {
+      fetchPostalCode();
+    }
+  }, [user.email]);
+
+  const handlePostalCodeUpdate = async (newCode: string) => {
+    try {
+      const response = await fetch("http://localhost:8000/postPostal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          postalCode: newCode,
+        }),
+      });
+
+      if (response.ok) {
+        setPostalCode(newCode);
+      } else {
+        console.error("Failed to update postal code");
+      }
+    } catch (error) {
+      console.error("Error updating postal code:", error);
+    }
+  };
 
   return (
     <>
@@ -76,7 +126,7 @@ export function NavUser({
                   <MapPin className="mr-2 h-4 w-4" />
                   Postal Code
                   <span className="ml-auto text-xs text-muted-foreground">
-                    {postalCode}
+                    {isLoading ? "Loading..." : postalCode || "Not set"}
                   </span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -94,7 +144,7 @@ export function NavUser({
         isOpen={isPostalCodeOpen}
         onOpenChange={setIsPostalCodeOpen}
         currentPostalCode={postalCode}
-        onUpdate={setPostalCode}
+        onUpdate={handlePostalCodeUpdate}
       />
     </>
   );

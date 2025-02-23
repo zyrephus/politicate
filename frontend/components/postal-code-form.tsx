@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 interface PostalCodeFormProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export function PostalCodeForm({
 }: PostalCodeFormProps) {
   const [newPostalCode, setNewPostalCode] = useState(currentPostalCode);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validatePostalCode = (code: string) => {
     const formattedCode = code.replace(/\s+/g, "").toUpperCase();
@@ -35,19 +37,27 @@ export function PostalCodeForm({
     return postalCodeRegex.test(formattedCode);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
 
     const formattedCode = newPostalCode.replace(/\s+/g, "").toUpperCase();
 
     if (!validatePostalCode(formattedCode)) {
       setError("Please enter a valid Canadian postal code");
+      setIsSubmitting(false);
       return;
     }
 
-    onUpdate(formattedCode);
-    setError("");
-    onOpenChange(false);
+    try {
+      await onUpdate(formattedCode);
+      onOpenChange(false);
+    } catch (error) {
+      setError("Failed to update postal code. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -64,17 +74,26 @@ export function PostalCodeForm({
             <Label htmlFor="postalCode">Postal Code</Label>
             <Input
               id="postalCode"
+              placeholder="A1A 1A1"
               value={newPostalCode}
               onChange={(e) => {
                 setNewPostalCode(e.target.value);
                 setError("");
               }}
               maxLength={7}
+              disabled={isSubmitting}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
-          <Button type="submit" className="w-full">
-            Update Postal Code
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              "Update Postal Code"
+            )}
           </Button>
         </form>
       </DialogContent>

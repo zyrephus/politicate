@@ -28,8 +28,8 @@ class ChatRequest(BaseModel):
 class String(BaseModel):
     req: str
 
-@app.get("/getMayor/{postalCode}")
-def getMayor(postalCode):
+@app.get("/getPoliticians/{postalCode}")
+def getPoliticians(postalCode):
     result = get_postcode_data(postalCode)
     if result:
         return result
@@ -97,22 +97,16 @@ async def get_score(email):
     except Exception as e:
         return {"error": str(e)}
 
-@app.post("/getPostal")
-async def get_postal(request: Request):
+@app.get("/getPostal/{email}")
+async def get_postal(email):
     """Fetches the postal code for a given email."""
     try:
-        data = await request.json()  # Parse JSON request
-        email = data.get("email")
-
-        if not email:
-            return {"error": "Email is required"}
-
         response = supabase_client.getPostal(email)
+        print(response)
         return response
 
     except Exception as e:
         return {"error": str(e)}
-
 
 @app.post("/postPostal")
 async def post_postal(request: Request):
