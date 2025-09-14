@@ -1,24 +1,23 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import { login, signup } from "@/app/auth/actions";
-import Link from "next/link";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import React, { useState, useEffect } from 'react';
+import { useClient } from 'next-auth-client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { login, signup } from '@/app/auth/actions';
+import Link from 'next/link';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BorderBeam } from '@/components/magicui/border-beam';
 
 interface AuthFormProps {
-  initialFormType?: "login" | "signup";
+  initialFormType?: 'login' | 'signup';
 }
 
-export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
+export function AuthForm({ initialFormType = 'login' }: AuthFormProps) {
   const searchParams = useSearchParams();
-  const urlType = searchParams.get("type") as "login" | "signup" | null;
+  const urlType = searchParams.get('type') as 'login' | 'signup' | null;
 
   const [formType, setFormType] = useState<"login" | "signup">(
     urlType || initialFormType
@@ -37,12 +36,12 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
   }, [urlType]);
 
   const toggleForm = () => {
-    const newType = formType === "login" ? "signup" : "login";
+    const newType = formType === 'login' ? 'signup' : 'login';
     setFormType(newType);
     setError(null);
     setMessage(null);
     // Update URL when toggling
-    window.history.pushState({}, "", `/auth?type=${newType}`);
+    window.history.pushState({}, '', `/auth?type=${newType}`);
   };
 
   async function onSubmit(formData: FormData) {
@@ -51,12 +50,12 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
     setMessage(null);
 
     try {
-      if (formType === "signup") {
-        const password = formData.get("password") as string;
-        const confirmPassword = formData.get("confirmPassword") as string;
+      if (formType === 'signup') {
+        const password = formData.get('password') as string;
+        const confirmPassword = formData.get('confirmPassword') as string;
 
         if (password !== confirmPassword) {
-          setError("Passwords do not match");
+          setError('Passwords do not match');
           setIsLoading(false);
           return;
         }
@@ -65,7 +64,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
         if (error) {
           setError(error);
         } else {
-          setMessage("Account created successfully.");
+          setMessage('Account created successfully.');
         }
       } else {
         const { error } = await login(formData);
@@ -74,8 +73,8 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
         }
       }
     } catch (error) {
-      console.error("Authentication error:", error);
-      setError("Authentication failed. Please try again.");
+      console.error('Authentication error:', error);
+      setError('Authentication failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -91,12 +90,12 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
 
       <motion.div layout className="mb-8 flex flex-col space-y-2 text-center">
         <motion.h1 layout className="text-2xl font-semibold tracking-tight">
-          {formType === "login" ? "Welcome back" : "Create an account"}
+          {formType === 'login' ? 'Welcome back' : 'Create an account'}
         </motion.h1>
         <motion.p layout className="text-sm text-muted-foreground">
-          {formType === "login"
-            ? "Enter your credentials to access your account"
-            : "Enter your details to create your account"}
+          {formType === 'login'
+            ? 'Enter your credentials to access your account'
+            : 'Enter your details to create your account'}
         </motion.p>
       </motion.div>
 
@@ -110,15 +109,14 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
             <span
               className={cn(
                 "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
-                formType === "login" && "text-white"
+                formType === 'login' && 'text-white bg-primary'
               )}
             >
               Login
             </span>
             <span
               className={cn(
-                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
-                formType === "signup" && "text-white"
+                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",\n                formType === 'signup' && 'text-white bg-primary'
               )}
             >
               Sign up
@@ -127,8 +125,8 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
           <div
             className="absolute inset-0 z-0 h-full rounded-full bg-primary transition-transform duration-200 ease-in-out"
             style={{
-              width: "50%",
-              transform: `translateX(${formType === "login" ? "0%" : "100%"})`,
+              width: '50%'
+              transform: `translateX(${formType === 'login' ? '0%' : '100%'})`,
             }}
           />
         </button>
@@ -158,12 +156,12 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
           <Input id="email" name="email" type="email" required />
         </motion.div>
         <motion.div layout className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Password</label>
           <div className="relative">
             <Input
               id="password"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               required
             />
             <button
@@ -180,20 +178,20 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
           </div>
         </motion.div>
         <AnimatePresence mode="popLayout">
-          {formType === "signup" && (
+          {formType === 'signup' && (
             <motion.div
               layout
               className="relative"
-              animate={{ height: "auto" }}
+              animate={{ height: 'auto' }}
               initial={{ height: 0 }}
               exit={{ height: 0 }}
               transition={{
                 duration: 0.2,
-                delay: formType === "signup" ? 0 : 0.2,
+                delay: formType === 'signup' ? 0 : 0.2,
               }}
             >
               <AnimatePresence mode="wait">
-                {formType === "signup" && (
+                {formType === 'signup' && (
                   <motion.div
                     className="space-y-2"
                     initial={{ opacity: 0 }}
@@ -201,7 +199,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
                     exit={{ opacity: 0 }}
                     transition={{
                       duration: 0.2,
-                      delay: formType === "signup" ? 0.2 : 0,
+                      delay: formType === 'signup' ? 0.2 : 0,
                     }}
                   >
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -209,7 +207,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
                       <Input
                         id="confirmPassword"
                         name="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
+                        type={showConfirmPassword ? 'text' : 'password'}
                         required
                       />
                       <button
@@ -245,10 +243,10 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   <span>Processing...</span>
                 </div>
-              ) : formType === "login" ? (
-                "Sign in"
+              ) : formType === 'login' ? (
+                'Sign in'
               ) : (
-                "Create account"
+                'Create account'
               )}
             </Button>
 
