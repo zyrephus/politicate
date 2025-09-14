@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,15 +108,14 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
             <span
               className={cn(
                 "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
-                formType === "login" && "text-white"
+                formType === "login" && "text-white bg-primary"
               )}
             >
               Login
             </span>
             <span
               className={cn(
-                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
-                formType === "signup" && "text-white"
+                "inline-flex w-24 items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",\n                formType === "signup" && "text-white bg-primary"
               )}
             >
               Sign up
@@ -158,7 +155,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
           <Input id="email" name="email" type="email" required />
         </motion.div>
         <motion.div layout className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Password</label>
           <div className="relative">
             <Input
               id="password"
