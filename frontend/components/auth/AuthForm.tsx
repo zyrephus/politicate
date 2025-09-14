@@ -139,7 +139,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-sm text-red-500 text-center"
+            className="text-sm text-blue-500 text-center"
           >
             {error}
           </motion.div>
