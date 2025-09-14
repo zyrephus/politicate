@@ -1,4 +1,3 @@
-"use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
@@ -15,7 +14,7 @@ export function Navbar() {
     >
       <div className="relative container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center relative group z-10">
-          <div className="absolute -inset-0.5 bg-red-500/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute -inset-0.5 bg-blue-500/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <Link href="/" className="relative">
             <Image
               src="/politicate.svg"
