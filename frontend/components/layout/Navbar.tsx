@@ -33,7 +33,7 @@ export function Navbar() {
           </Link>
           <Link href="/auth?type=login">
             <Button>
-              Login
+              Login to the Spring Fling Event
               <LogIn className="h-4 w-4" />
             </Button>
           </Link>
