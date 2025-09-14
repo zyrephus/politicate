@@ -235,7 +235,7 @@ export function AuthForm({ initialFormType = "login" }: AuthFormProps) {
         <motion.div layout className="space-y-4 pt-2">
           <div className="flex flex-col gap-2">
             <Button
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-200"
+              className="w-full bg-[#0066cc] hover:bg-[#0052a3] text-white shadow-lg transition-all duration-200"
               type="submit"
               disabled={isLoading}
               size="lg"
